@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Workouts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .filters {
+            margin: 20px auto;
+            max-width: 400px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .filters input, .filters select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Workouts</h1>
+    
+    <div class="filters">
+        <input type="text" id="searchInput" placeholder="Search by username...">
+        <select id="workoutFilter">
+            <option value="All">All</option>
+            <option value="running">Running</option>
+            <option value="cycling">Cycling</option>
+            <option value="swimming">Swimming</option>
+            <option value="yoga">Yoga</option>
+        </select>
+    </div>
+    
+    <table id="userTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Workouts</th>
+                <th>Number of Workouts</th>
+                <th>Total Workout Minutes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% userData.forEach(user => { 
+                const totalWorkouts = user.workouts.length;
+                const totalMinutes = user.workouts.reduce((sum, workout) => sum + workout.minutes, 0);
+                const workoutsList = user.workouts.map(workout => workout.type).join(", ");
+            %>
+                <tr>
+                    <td class="username"><%= user.name %></td>
+                    <td class="workouts"><%= workoutsList %></td>
+                    <td><%= totalWorkouts %></td>
+                    <td><%= totalMinutes %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <script>
+        document.getElementById('searchInput').addEventListener('keyup', filterTable);
+        document.getElementById('workoutFilter').addEventListener('change', filterTable);
+
+        function filterTable() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const workoutValue = document.getElementById('workoutFilter').value;
+            const rows = document.querySelectorAll('#userTable tbody tr');
+
+            rows.forEach(row => {
+                const username = row.querySelector('.username').textContent.toLowerCase();
+                const workouts = row.querySelector('.workouts').textContent.toLowerCase();
+                const isUsernameMatch = username.includes(searchValue);
+                const isWorkoutMatch = workoutValue === 'All' || workouts.includes(workoutValue.toLowerCase());
+
+                if (isUsernameMatch && isWorkoutMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
